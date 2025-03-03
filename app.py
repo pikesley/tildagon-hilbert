@@ -2,12 +2,13 @@
 from events.input import BUTTON_TYPES, Buttons
 from system.eventbus import eventbus
 from system.patterndisplay.events import PatternDisable
-from math import radians
+
 import app
 
 from .lib.background import Background
-from .pikesley.vector.vector import Vector
 from .lib.hilbert import construct_string
+from .pikesley.vector.vector import Vector
+
 
 class Hilbert(app.App):
     """Hilbert."""
@@ -16,37 +17,38 @@ class Hilbert(app.App):
         """Construct."""
         eventbus.emit(PatternDisable())
         self.button_states = Buttons(self)
-        self.blanked = False
-        self.v = Vector(10, 0)
+        self.angle = 90
+        self.depth = 4
+        self.string = construct_string("a", self.depth)
+        self.index = 0
+
+        self.size = 150
+        self.segment_length = self.size / ((2**self.depth) - 1)
 
     def update(self, _):
         """Update."""
         self.scan_buttons()
-
-        self.string = construct_string("a", 3)
+        self.portion = self.string[:]
+        # self.index += 8
 
     def draw(self, ctx):
         """Draw."""
         self.overlays = []
-        if not self.blanked:
-            self.overlays.append(Background(colour=(0, 0, 0)))
-            self.draw_overlays(ctx)
-            self.blanked = True
+        self.overlays.append(Background(colour=(0, 0, 0)))
+        self.draw_overlays(ctx)
 
         ctx.rgb(255, 0, 0)
-        ctx.move_to(0, 0)
-        for char in self.string:
+        ctx.move_to(-(self.size / 2), -(self.size / 2))
+        self.v = Vector(self.segment_length, 0)
+        for char in self.portion:
             if char == "+":
-                v.rotate(90)
+                self.v.rotate(self.angle)
             if char == "-":
-                v.rotate(-90)
+                self.v.rotate(-self.angle)
             if char == "f":
-                ctx.rel_line_to(*v.coords)
-
-
+                ctx.rel_line_to(*self.v.coords)
 
         ctx.stroke()
-
 
     def scan_buttons(self):
         """Buttons."""

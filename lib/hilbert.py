@@ -11,6 +11,7 @@ def iterate_hilbert(start_string):
     return new_string
 
 
+# TODO make these both generators
 def construct_string(start_hilbert, iterations):
     """Construct a whole string."""
     cur_hilbert = start_hilbert
