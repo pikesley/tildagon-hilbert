@@ -1,11 +1,11 @@
-def hilbert_segment_length(screen_size, depth):
+def hilbert_segment_length(start_point, depth):
     """Calculate segment length."""
-    return screen_size / ((2**depth) - 1)
+    return abs(start_point) * 2 / ((2**depth) - 1)
 
 
-def arrowhead_segment_length(screen_size, depth):
+def arrowhead_segment_length(start_point, depth):
     """Calculate segment length."""
-    return screen_size / (2**depth)  # TODO still a bit guessy
+    return (abs(start_point) * 2) / 2**depth
 
 
 def hilbert_hue_increment(depth):

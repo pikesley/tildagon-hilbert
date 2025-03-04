@@ -10,7 +10,6 @@ conf = {
         "rules": {"a": "bf+af+b", "b": "af-bf-a"},
         "angle": 60,
         "max-depth": 6,
-        "screen-size": 170,
         "start-point": (-100, -60),
         "start-letter": ["b", "a"],
         "segment-length": arrowhead_segment_length,
@@ -20,7 +19,6 @@ conf = {
         "rules": {"a": "+bf-afa-fb+", "b": "-af+bfb+fa-"},
         "angle": 90,
         "max-depth": 6,
-        "screen-size": 170,
         "start-point": (-85, -85),
         "start-letter": ["a", "a"],  # TODO this is fuckery. might be a `% length``
         "segment-length": hilbert_segment_length,

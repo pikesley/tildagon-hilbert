@@ -37,12 +37,13 @@ class Hilbert(app.App):
 
     def reset(self):
         """Reset."""
-        self.screen_size = self.curve_conf["screen-size"]
         depth = self.depths[0]
         start_letter = self.curve_conf["start-letter"][depth % 2]
         self.string = construct_string(start_letter, self.curve_conf["rules"], depth)
         self.hue_increment = self.curve_conf["hue-increment"](depth)
-        self.segment_length = self.curve_conf["segment-length"](self.screen_size, depth)
+        self.segment_length = self.curve_conf["segment-length"](
+            self.curve_conf["start-point"][0], depth
+        )
         self.angle = 0
 
         self.blanked = False
