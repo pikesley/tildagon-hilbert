@@ -8,41 +8,15 @@ from tildagonos import tildagonos
 
 import app
 
-from .lib.arrowhead import construct_arrowhead_string
 from .lib.background import Background
+from .lib.conf import conf
 from .lib.gamma import gamma_corrections
-from .lib.hilbert import construct_hilbert_string
+from .lib.generators import construct_string
 from .lib.segment import Segment
-from .lib.tools import (
-    arrowhead_hue_increment,
-    arrowhead_segment_length,
-    hilbert_hue_increment,
-    hilbert_segment_length,
-)
 from .pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
 
+curve = "arrowhead"
 
-conf = {
-    "arrowhead": {
-        "angle": 60,
-        "max-depth": 6,
-        "screen-size": 170,
-        "start-letter": ["b", "a"],
-        "generator": construct_arrowhead_string,
-        "segment-length": arrowhead_segment_length,
-        "hue-increment": arrowhead_hue_increment,
-    },
-    "hilbert": {
-        "angle": 90,
-        "max-depth": 6,
-        "screen-size": 170,
-        "start-letter": ["a", "a"],
-        "generator": construct_hilbert_string,
-        "segment-length": hilbert_segment_length,
-        "hue-increment": hilbert_hue_increment,
-    },
-}
-curve="hilbert"
 
 class Hilbert(app.App):
     """Hilbert."""
@@ -62,7 +36,7 @@ class Hilbert(app.App):
         """Reset."""
         depth = self.depths[0]
         start_letter = conf[curve]["start-letter"][depth % 2]
-        self.string = conf[curve]["generator"](start_letter, depth)
+        self.string = construct_string(start_letter, conf[curve]["rules"], depth)
         self.hue_increment = conf[curve]["hue-increment"](depth)
         self.segment_length = conf[curve]["segment-length"](self.screen_size, depth)
         self.angle = 0

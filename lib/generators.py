@@ -1,9 +1,8 @@
 # https://medium.com/@gregking917/the-hilbert-curve-21d7e9b2789c
 
 
-def iterate_hilbert(start_string):
+def iterate(start_string, rules):
     """Iterate."""
-    rules = {"a": "+bf-afa-fb+", "b": "-af+bfb+fa-"}
     new_string = ""
 
     for char in start_string:
@@ -13,11 +12,11 @@ def iterate_hilbert(start_string):
         yield char
 
 
-def construct_hilbert_string(start_hilbert, iterations):
-    """Construct a whole string."""
-    cur_hilbert = start_hilbert
+def construct_string(start_string, rules, iterations):
+    """Construct string."""
+    cur_string = start_string
 
     for _ in range(iterations):
-        cur_hilbert = iterate_hilbert(cur_hilbert)
+        cur_string = iterate(cur_string, rules)
 
-    yield from cur_hilbert
+    yield from cur_string
