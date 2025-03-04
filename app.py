@@ -8,13 +8,41 @@ from tildagonos import tildagonos
 
 import app
 
+from .lib.arrowhead import construct_arrowhead_string
 from .lib.background import Background
-from .lib.conf import conf
 from .lib.gamma import gamma_corrections
-from .lib.hilbert import construct_string
+from .lib.hilbert import construct_hilbert_string
 from .lib.segment import Segment
+from .lib.tools import (
+    arrowhead_hue_increment,
+    arrowhead_segment_length,
+    hilbert_hue_increment,
+    hilbert_segment_length,
+)
 from .pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
 
+
+conf = {
+    "arrowhead": {
+        "angle": 60,
+        "max-depth": 6,
+        "screen-size": 170,
+        "start-letter": ["b", "a"],
+        "generator": construct_arrowhead_string,
+        "segment-length": arrowhead_segment_length,
+        "hue-increment": arrowhead_hue_increment,
+    },
+    "hilbert": {
+        "angle": 90,
+        "max-depth": 6,
+        "screen-size": 170,
+        "start-letter": ["a", "a"],
+        "generator": construct_hilbert_string,
+        "segment-length": hilbert_segment_length,
+        "hue-increment": hilbert_hue_increment,
+    },
+}
+curve="hilbert"
 
 class Hilbert(app.App):
     """Hilbert."""
@@ -23,25 +51,26 @@ class Hilbert(app.App):
         """Construct."""
         eventbus.emit(PatternDisable())
         self.button_states = Buttons(self)
-        self.screen_size = conf["screen-size"]
+        self.screen_size = conf[curve]["screen-size"]
 
-        self.depths = list(range(1, conf["max-depth"] + 1)) + list(
-            range(conf["max-depth"] - 1, 1, -1)
+        self.depths = list(range(1, conf[curve]["max-depth"] + 1)) + list(
+            range(conf[curve]["max-depth"] - 1, 1, -1)
         )
-
         self.reset()
 
     def reset(self):
         """Reset."""
         depth = self.depths[0]
-        self.string = construct_string("a", depth)
-        self.hue_increment = 1.0 / (2 ** (depth * 2) - 1)
-        self.segment_length = self.screen_size / ((2**depth) - 1)
+        start_letter = conf[curve]["start-letter"][depth % 2]
+        self.string = conf[curve]["generator"](start_letter, depth)
+        self.hue_increment = conf[curve]["hue-increment"](depth)
+        self.segment_length = conf[curve]["segment-length"](self.screen_size, depth)
         self.angle = 0
 
         self.blanked = False
         self.segment = None
         self.hue = random()
+        self.hue = 0
         self.rotation = random() * radians(360)
 
     def rotate_depths(self):
@@ -62,9 +91,9 @@ class Hilbert(app.App):
 
                 char = next(self.string)
                 if char == "+":
-                    self.angle = (self.angle + conf["angle"]) % 360
+                    self.angle = (self.angle + conf[curve]["angle"]) % 360
                 if char == "-":
-                    self.angle = (self.angle - conf["angle"]) % 360
+                    self.angle = (self.angle - conf[curve]["angle"]) % 360
 
                 if char == "f":
                     found_an_f = True

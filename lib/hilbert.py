@@ -13,8 +13,7 @@ def iterate_hilbert(start_string):
         yield char
 
 
-# TODO make these both generators
-def construct_string(start_hilbert, iterations):
+def construct_hilbert_string(start_hilbert, iterations):
     """Construct a whole string."""
     cur_hilbert = start_hilbert
 

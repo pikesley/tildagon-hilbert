@@ -1,4 +1,4 @@
-from lib.hilbert import construct_string, iterate_hilbert
+from lib.hilbert import construct_hilbert_string, iterate_hilbert
 
 
 def test_iterate_hilbert():
@@ -12,8 +12,8 @@ def test_iterate_hilbert():
 
 def test_construct_string():
     """Test."""
-    assert "".join(list(construct_string("a", 1))) == "+bf-afa-fb+"
-    assert "".join(list(construct_string("a", 3))) == (
+    assert "".join(list(construct_hilbert_string("a", 1))) == "+bf-afa-fb+"
+    assert "".join(list(construct_hilbert_string("a", 3))) == (
         "+-+bf-afa-fb+f+-af+bfb+fa-f-af+bfb+fa-+f+bf-afa-fb+-f-+-af+bfb+fa-f-+bf-"
         "afa-fb+f+bf-afa-fb+-f-af+bfb+fa-+f+-af+bfb+fa-f-+bf-afa-fb+f+bf-afa-fb+-"
         "f-af+bfb+fa-+-f-+bf-afa-fb+f+-af+bfb+fa-f-af+bfb+fa-+f+bf-afa-fb+-+"
