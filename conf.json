@@ -1,1 +1,5 @@
-null
+{
+  "angle": 90,
+  "max-depth": 6,
+  "screen-size": 170
+}

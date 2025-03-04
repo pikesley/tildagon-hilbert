@@ -8,7 +8,9 @@ def iterate_hilbert(start_string):
 
     for char in start_string:
         new_string = new_string + rules[char] if char in rules else new_string + char
-    return new_string
+
+    for char in new_string:
+        yield char
 
 
 # TODO make these both generators
@@ -18,4 +20,5 @@ def construct_string(start_hilbert, iterations):
 
     for _ in range(iterations):
         cur_hilbert = iterate_hilbert(cur_hilbert)
-    return cur_hilbert
+
+    yield from cur_hilbert
