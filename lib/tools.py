@@ -15,4 +15,4 @@ def hilbert_hue_increment(depth):
 
 def arrowhead_hue_increment(depth):
     """Calculate hue-increment."""
-    return 1.0 / (2 ** (depth * 2) - 1)  # TODO this is bogus
+    return 1.0 / (3**depth)
