@@ -50,6 +50,7 @@ class Hilbert(app.App):
         self.hue = random()
         self.hue = 0
         self.rotation = random() * radians(360)
+        self.rotation = 0
 
     def rotate_depths(self):
         """Rotate `depths` list."""
@@ -67,7 +68,8 @@ class Hilbert(app.App):
 
         while not found_an_f:
             try:
-                start_point = (-(self.screen_size / 2), -(self.screen_size / 2))
+                # start_point = (-(self.screen_size / 2), -(self.screen_size / 2))
+                start_point = self.curve_conf["start-point"]
                 if self.segment:
                     start_point = self.segment.end
 

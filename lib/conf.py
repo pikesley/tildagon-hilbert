@@ -11,6 +11,7 @@ conf = {
         "angle": 60,
         "max-depth": 6,
         "screen-size": 170,
+        "start-point": (-100, -60),
         "start-letter": ["b", "a"],
         "segment-length": arrowhead_segment_length,
         "hue-increment": arrowhead_hue_increment,
@@ -20,7 +21,8 @@ conf = {
         "angle": 90,
         "max-depth": 6,
         "screen-size": 170,
-        "start-letter": ["a", "a"],  # TODO this is fuckery
+        "start-point": (-85, -85),
+        "start-letter": ["a", "a"],  # TODO this is fuckery. might be a `% length``
         "segment-length": hilbert_segment_length,
         "hue-increment": hilbert_hue_increment,
     },
