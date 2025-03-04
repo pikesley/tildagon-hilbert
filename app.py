@@ -15,8 +15,6 @@ from .lib.generators import construct_string
 from .lib.segment import Segment
 from .pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
 
-curve = "arrowhead"
-
 
 class Hilbert(app.App):
     """Hilbert."""
@@ -25,20 +23,26 @@ class Hilbert(app.App):
         """Construct."""
         eventbus.emit(PatternDisable())
         self.button_states = Buttons(self)
-        self.screen_size = conf[curve]["screen-size"]
 
-        self.depths = list(range(1, conf[curve]["max-depth"] + 1)) + list(
-            range(conf[curve]["max-depth"] - 1, 1, -1)
-        )
+        self.curves = list(conf.keys())
+        self.curve_conf = conf[self.curves[0]]
+        self.reset_depths()
         self.reset()
+
+    def reset_depths(self):
+        """Reset the depths."""
+        self.depths = list(range(1, self.curve_conf["max-depth"] + 1)) + list(
+            range(self.curve_conf["max-depth"] - 1, 1, -1)
+        )
 
     def reset(self):
         """Reset."""
+        self.screen_size = self.curve_conf["screen-size"]
         depth = self.depths[0]
-        start_letter = conf[curve]["start-letter"][depth % 2]
-        self.string = construct_string(start_letter, conf[curve]["rules"], depth)
-        self.hue_increment = conf[curve]["hue-increment"](depth)
-        self.segment_length = conf[curve]["segment-length"](self.screen_size, depth)
+        start_letter = self.curve_conf["start-letter"][depth % 2]
+        self.string = construct_string(start_letter, self.curve_conf["rules"], depth)
+        self.hue_increment = self.curve_conf["hue-increment"](depth)
+        self.segment_length = self.curve_conf["segment-length"](self.screen_size, depth)
         self.angle = 0
 
         self.blanked = False
@@ -50,6 +54,10 @@ class Hilbert(app.App):
     def rotate_depths(self):
         """Rotate `depths` list."""
         self.depths = self.depths[1:] + [self.depths[0]]
+
+    def rotate_curves(self):
+        """Rotate `curves` list."""
+        self.curves = self.curves[1:] + [self.curves[0]]
 
     def update(self, _):
         """Update."""
@@ -65,9 +73,9 @@ class Hilbert(app.App):
 
                 char = next(self.string)
                 if char == "+":
-                    self.angle = (self.angle + conf[curve]["angle"]) % 360
+                    self.angle = (self.angle + self.curve_conf["angle"]) % 360
                 if char == "-":
-                    self.angle = (self.angle - conf[curve]["angle"]) % 360
+                    self.angle = (self.angle - self.curve_conf["angle"]) % 360
 
                 if char == "f":
                     found_an_f = True
@@ -104,6 +112,13 @@ class Hilbert(app.App):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
             self.button_states.clear()
             self.minimise()
+
+        if self.button_states.get(BUTTON_TYPES["CONFIRM"]):
+            self.button_states.clear()
+            self.rotate_curves()
+            self.curve_conf = conf[self.curves[0]]
+            self.reset_depths()
+            self.reset()
 
     def light_leds(self):
         """Light lights."""
