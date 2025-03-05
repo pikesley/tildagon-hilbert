@@ -1,7 +1,3 @@
-# https://medium.com/@gregking917/the-hilbert-curve-21d7e9b2789c
-# https://www.robertdickau.com/lsys2d.html
-
-
 def iterate(start_string, rules):
     """Iterate."""
     new_string = ""

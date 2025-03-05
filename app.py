@@ -1,3 +1,6 @@
+# https://www.robertdickau.com/lsys2d.html
+# https://medium.com/@gregking917/the-hilbert-curve-21d7e9b2789c
+
 from math import radians
 from random import random
 
@@ -38,12 +41,12 @@ class Hilbert(app.App):
     def reset(self):
         """Reset."""
         depth = self.depths[0]
-        start_letter = self.curve_conf["start-letter"][depth % 2]
+        start_letter = self.curve_conf["start-letters"][
+            depth % len(self.curve_conf["start-letters"])
+        ]
         self.string = construct_string(start_letter, self.curve_conf["rules"], depth)
         self.hue_increment = self.curve_conf["hue-increment"](depth)
-        self.segment_length = self.curve_conf["segment-length"](
-            self.curve_conf["start-point"][0], depth
-        )
+        self.segment_length = self.curve_conf["segment-length"](depth)
         self.angle = 0
 
         self.blanked = False
@@ -51,7 +54,6 @@ class Hilbert(app.App):
         self.hue = random()
         self.hue = 0
         self.rotation = random() * radians(360)
-        self.rotation = 0
 
     def rotate_depths(self):
         """Rotate `depths` list."""
