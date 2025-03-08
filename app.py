@@ -1,7 +1,7 @@
 # https://www.robertdickau.com/lsys2d.html
 # https://medium.com/@gregking917/the-hilbert-curve-21d7e9b2789c
 
-from math import radians
+from math import radians, sqrt
 from random import random
 
 from events.input import BUTTON_TYPES, Buttons
@@ -12,91 +12,75 @@ from tildagonos import tildagonos
 import app
 
 from .lib.background import Background
-from .lib.conf import conf
+from .lib.curve_list import curves
 from .lib.gamma import gamma_corrections
-from .lib.generators import construct_string
 from .lib.segment import Segment
 from .pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
+from .pikesley.shapes.circle import Circle
+from .pikesley.shapes.hexagon import Hexagon
 
 
-class Hilbert(app.App):
-    """Hilbert."""
+class Fractals(app.App):
+    """Fractal curves."""
 
     def __init__(self):
         """Construct."""
         eventbus.emit(PatternDisable())
         self.button_states = Buttons(self)
 
-        self.curves = list(conf.keys())
-        self.curve_conf = conf[self.curves[0]]
-        self.reset_depths()
+        self.curve_index = 0
+        self.curve = curves[self.curve_index]()
         self.reset()
-
-    def reset_depths(self):
-        """Reset the depths."""
-        self.depths = list(range(1, self.curve_conf["max-depth"] + 1)) + list(
-            range(self.curve_conf["max-depth"] - 1, 1, -1)
-        )
 
     def reset(self):
         """Reset."""
-        depth = self.depths[0]
-        start_letter = self.curve_conf["start-letters"][
-            depth % len(self.curve_conf["start-letters"])
-        ]
-        self.string = construct_string(start_letter, self.curve_conf["rules"], depth)
-        self.hue_increment = self.curve_conf["hue-increment"](depth)
-        self.segment_length = self.curve_conf["segment-length"](depth)
+        self.string = self.curve.string
         self.angle = 0
 
         self.blanked = False
         self.segment = None
         self.hue = random()
-        self.hue = 0
         self.rotation = random() * radians(360)
-
-    def rotate_depths(self):
-        """Rotate `depths` list."""
-        self.depths = self.depths[1:] + [self.depths[0]]
-
-    def rotate_curves(self):
-        """Rotate `curves` list."""
-        self.curves = self.curves[1:] + [self.curves[0]]
 
     def update(self, _):
         """Update."""
         self.scan_buttons()
 
-        found_an_f = False
-
-        while not found_an_f:
+        self.segment_generated = False
+        while not self.segment_generated:
             try:
-                # start_point = (-(self.screen_size / 2), -(self.screen_size / 2))
-                start_point = self.curve_conf["start-point"]
-                if self.segment:
-                    start_point = self.segment.end
-
-                char = next(self.string)
-                if char == "+":
-                    self.angle = (self.angle + self.curve_conf["angle"]) % 360
-                if char == "-":
-                    self.angle = (self.angle - self.curve_conf["angle"]) % 360
-
-                if char == "f":
-                    found_an_f = True
-                    self.segment = Segment(
-                        start=start_point,
-                        length=self.segment_length,
-                        angle=self.angle,
-                        hue=self.hue,
-                    )
-                    self.hue += self.hue_increment
+                self.process_char(next(self.string))
 
             except StopIteration:
-                self.rotate_depths()
+                self.curve.next_depth()
                 self.reset()
 
+        self.hue += self.curve.hue_increment
         self.light_leds()
+
+    def process_char(self, char):
+        """Process a char."""
+        if char == "+":
+            self.angle = (self.angle + self.curve.angle) % 360
+        if char == "-":
+            self.angle = (self.angle - self.curve.angle) % 360
+
+        if char == "f":
+            self.segment = Segment(
+                start=self.get_start_point,
+                length=self.curve.segment_length,
+                angle=self.angle,
+                hue=self.hue,
+            )
+            self.segment_generated = True
+
+    @property
+    def get_start_point(self):
+        """Where to start the next segment."""
+        if self.segment:
+            return self.segment.end
+
+        return self.curve.start_point
 
     def draw(self, ctx):
         """Draw."""
@@ -105,6 +89,7 @@ class Hilbert(app.App):
 
         if not self.blanked:
             self.overlays.append(Background(colour=(0, 0, 0)))
+            # self.draw_helpers(type="hexagons")
             self.blanked = True
 
         if self.segment:
@@ -120,9 +105,8 @@ class Hilbert(app.App):
 
         if self.button_states.get(BUTTON_TYPES["CONFIRM"]):
             self.button_states.clear()
-            self.rotate_curves()
-            self.curve_conf = conf[self.curves[0]]
-            self.reset_depths()
+            self.curve_index = (self.curve_index + 1) % len(curves)
+            self.curve = curves[self.curve_index]()
             self.reset()
 
     def light_leds(self):
@@ -138,5 +122,30 @@ class Hilbert(app.App):
 
         tildagonos.leds.write()
 
+    def draw_helpers(self, variety):
+        """Draw some framework."""
+        colour = (0.3, 0.3, 0.3)
+        if variety == "circles":
+            for i in range(0, 140, 23):
+                self.overlays.append(
+                    Circle(centre=(0, 0), size=i, colour=colour, filled=False)
+                )
 
-__app_export__ = Hilbert
+        if variety == "hexagons":
+            size = 40
+            self.overlays.append(
+                Hexagon(centre=(0, 0), size=size, colour=colour, filled=False)
+            )
+            self.overlays.append(
+                Hexagon(
+                    centre=(0, size * sqrt(3)), size=size, colour=colour, filled=False
+                )
+            )
+            self.overlays.append(
+                Hexagon(
+                    centre=(0, -size * sqrt(3)), size=size, colour=colour, filled=False
+                )
+            )
+
+
+__app_export__ = Fractals

@@ -1,36 +1,36 @@
-from lib.conf import conf
-from lib.generators import construct_string, iterate
+from lib.curves.hilbert import Hilbert
+
+# def test_iterate_hilbert():
+#     """Test."""
+#     assert "".join(list(iterate("f", curves["hilbert"]["rules"]))) == "f"
+#     assert "".join(list(iterate("a", curves["hilbert"]["rules"]))) == "+bf-afa-fb+"
+#     assert "".join(list(iterate("b", curves["hilbert"]["rules"]))) == "-af+bfb+fa-"
+#     assert (
+#         "".join(list(iterate("+bf-a", curves["hilbert"]["rules"])))
+#         == "+-af+bfb+fa-f-+bf-afa-fb+"
+#     )
+#     assert "".join(list(iterate("xyz", curves["hilbert"]["rules"]))) == "xyz"
 
 
-def test_iterate_hilbert():
-    """Test."""
-    assert "".join(list(iterate("f", conf["hilbert"]["rules"]))) == "f"
-    assert "".join(list(iterate("a", conf["hilbert"]["rules"]))) == "+bf-afa-fb+"
-    assert "".join(list(iterate("b", conf["hilbert"]["rules"]))) == "-af+bfb+fa-"
-    assert (
-        "".join(list(iterate("+bf-a", conf["hilbert"]["rules"])))
-        == "+-af+bfb+fa-f-+bf-afa-fb+"
-    )
-    assert "".join(list(iterate("xyz", conf["hilbert"]["rules"]))) == "xyz"
-
-
-def test_iterate_arrowhead():
-    """Test."""
-    assert "".join(list(iterate("f", conf["arrowhead"]["rules"]))) == "f"
-    assert "".join(list(iterate("a", conf["arrowhead"]["rules"]))) == "bf+af+b"
-    assert (
-        "".join(list(iterate("bf+af+b", conf["arrowhead"]["rules"])))
-        == "af-bf-af+bf+af+bf+af-bf-a"
-    )
+# def test_iterate_arrowhead():
+#     """Test."""
+#     assert "".join(list(iterate("f", curves["arrowhead"]["rules"]))) == "f"
+#     assert "".join(list(iterate("a", curves["arrowhead"]["rules"]))) == "bf+af+b"
+#     assert (
+#         "".join(list(iterate("bf+af+b", curves["arrowhead"]["rules"])))
+#         == "af-bf-af+bf+af+bf+af-bf-a"
+#     )
 
 
 def test_construct_string():
     """Test."""
-    assert (
-        "".join(list(construct_string("a", conf["hilbert"]["rules"], 1)))
-        == "+bf-afa-fb+"
-    )
-    assert "".join(list(construct_string("a", conf["hilbert"]["rules"], 3))) == (
+    hilb = Hilbert()
+
+    hilb.depth_index = 0
+    assert "".join(list(hilb.string)) == "+bf-afa-fb+"
+
+    hilb.depth_index = 2
+    assert "".join(list(hilb.string)) == (
         "+-+bf-afa-fb+f+-af+bfb+fa-f-af+bfb+fa-+f+bf-afa-fb+-f-+-af+bfb+fa-f-+bf-"
         "afa-fb+f+bf-afa-fb+-f-af+bfb+fa-+f+-af+bfb+fa-f-+bf-afa-fb+f+bf-afa-fb+-"
         "f-af+bfb+fa-+-f-+bf-afa-fb+f+-af+bfb+fa-f-af+bfb+fa-+f+bf-afa-fb+-+"

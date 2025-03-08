@@ -9,7 +9,7 @@ def iterate(start_string, rules):
         yield char
 
 
-def construct_string(start_string, rules, iterations):
+def generate_string(start_string, rules, iterations):
     """Construct string."""
     cur_string = start_string
 
