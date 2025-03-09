@@ -30,6 +30,7 @@ class Fractals(app.App):
 
         self.curve_index = 0
         self.curve = curves[self.curve_index]()
+        self.min_x = self.max_x = self.min_y = self.max_y = 0
         self.reset()
 
     def reset(self):
@@ -52,6 +53,11 @@ class Fractals(app.App):
                 self.process_char(next(self.string))
 
             except StopIteration:
+                # print(f"{self.min_x=}")
+                # print(f"{self.max_x=}")
+                # print(f"{self.min_y=}")
+                # print(f"{self.max_y=}")
+
                 self.curve.next_depth()
                 self.reset()
 
@@ -78,6 +84,10 @@ class Fractals(app.App):
     def get_start_point(self):
         """Where to start the next segment."""
         if self.segment:
+            # self.min_x = min(self.min_x, self.segment.end[0])
+            # self.max_x = max(self.max_x, self.segment.end[0])
+            # self.min_y = min(self.min_y, self.segment.end[1])
+            # self.max_y = max(self.max_y, self.segment.end[1])
             return self.segment.end
 
         return self.curve.start_point
@@ -89,7 +99,7 @@ class Fractals(app.App):
 
         if not self.blanked:
             self.overlays.append(Background(colour=(0, 0, 0)))
-            # self.draw_helpers(type="hexagons")
+            # self.draw_helpers(variety="circles")
             self.blanked = True
 
         if self.segment:
@@ -126,7 +136,7 @@ class Fractals(app.App):
         """Draw some framework."""
         colour = (0.3, 0.3, 0.3)
         if variety == "circles":
-            for i in range(0, 140, 23):
+            for i in range(0, 140, 11):
                 self.overlays.append(
                     Circle(centre=(0, 0), size=i, colour=colour, filled=False)
                 )
