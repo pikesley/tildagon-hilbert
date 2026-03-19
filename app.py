@@ -11,13 +11,13 @@ from tildagonos import tildagonos
 
 import app
 
-from .lib.background import Background
+from .common.background import Background
+from .common.gamma import gamma_corrections
+from .common.rgb_from_hue import rgb_from_hue
+from .common.shapes.circle import Circle
+from .common.shapes.hexagon import Hexagon
 from .lib.curve_list import curves
-from .lib.gamma import gamma_corrections
 from .lib.segment import Segment
-from .pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
-from .pikesley.shapes.circle import Circle
-from .pikesley.shapes.hexagon import Hexagon
 
 
 class Fractals(app.App):
@@ -129,6 +129,13 @@ class Fractals(app.App):
 
         for index in range(12):
             tildagonos.leds[index + 1] = colour
+
+        colour = [
+            gamma_corrections[int(c * brightness * 255)] for c in rgb_from_hue(self.hue + 0.5)
+        ]
+
+        for index in range(6):
+            tildagonos.leds[index + 13] = colour
 
         tildagonos.leds.write()
 

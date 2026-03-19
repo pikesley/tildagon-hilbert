@@ -6,12 +6,12 @@ push: convert-conf
 	python -m mpremote cp -r * :/apps/${APP}/
 
 mkdir:
-	python -m mpremote mkdir apps/${APP}
+	-python -m mpremote mkdir apps/${APP}
 
 connect:
 	python -m mpremote
 
-deploy: push connect
+deploy: mkdir push connect
 
 convert-conf:
 	@python scripts/conf_yaml_to_json.py
@@ -26,6 +26,7 @@ clean:
 	@find . -depth -name .pytest_cache -exec rm -fr {} \;
 
 test:
+	PYTHONPATH=/opt \
 	python -m pytest \
 		--random-order \
 		--verbose \
@@ -47,6 +48,7 @@ run:
 		--name ${APP} \
 		--hostname ${APP} \
 		--volume $(shell pwd):/opt/${APP} \
+		--volume $(shell pwd)/../common/:/opt/common \
 		--interactive \
 		--tty \
 		--rm \

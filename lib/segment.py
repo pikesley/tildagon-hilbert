@@ -1,7 +1,8 @@
 try:
-    from ..pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
+    from ..common.rgb_from_hue import rgb_from_hue
 except ImportError:
-    from pikesley.rgb_from_hue.rgb_from_hue import rgb_from_hue
+    from common.colour_tools import rgb_from_hue
+
 from math import cos, radians, sin
 
 
