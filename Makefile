@@ -3,7 +3,7 @@ APP = $(shell basename $$(pwd))
 all: format test clean
 
 push: convert-conf
-	python -m mpremote cp -r * :/apps/${APP}/
+	python scripts/pusher.py
 
 mkdir:
 	-python -m mpremote mkdir apps/${APP}
@@ -13,8 +13,20 @@ connect:
 
 deploy: mkdir push connect
 
+uninstall:
+	python -m mpremote fs rm -r :/apps/${APP}
+
+excludes:
+	python scripts/excluder.py
+
 convert-conf:
 	@python scripts/conf_yaml_to_json.py
+
+test-release:
+	bash scripts/test-release.sh
+
+release:
+	gh release create
 
 format:
 	ruff format
@@ -26,7 +38,6 @@ clean:
 	@find . -depth -name .pytest_cache -exec rm -fr {} \;
 
 test:
-	PYTHONPATH=/opt \
 	python -m pytest \
 		--random-order \
 		--verbose \
@@ -48,7 +59,6 @@ run:
 		--name ${APP} \
 		--hostname ${APP} \
 		--volume $(shell pwd):/opt/${APP} \
-		--volume $(shell pwd)/../common/:/opt/common \
 		--interactive \
 		--tty \
 		--rm \

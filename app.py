@@ -131,7 +131,8 @@ class Fractals(app.App):
             tildagonos.leds[index + 1] = colour
 
         colour = [
-            gamma_corrections[int(c * brightness * 255)] for c in rgb_from_hue(self.hue + 0.5)
+            gamma_corrections[int(c * brightness * 255)]
+            for c in rgb_from_hue(self.hue + 0.5)
         ]
 
         for index in range(6):
